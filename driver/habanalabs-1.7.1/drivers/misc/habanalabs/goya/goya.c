@@ -2897,22 +2897,37 @@ static int goya_mmap(struct hl_device *hdev, struct vm_area_struct *vma,
 	vm_flags_set(vma, VM_IO | VM_PFNMAP | VM_DONTEXPAND | VM_DONTDUMP |
 			VM_DONTCOPY | VM_NORESERVE);
 
-#ifdef _HAS_DMA_MMAP_COHERENT
-
-	rc = dma_mmap_coherent(hdev->dev, vma, cpu_addr,
-				(dma_addr - HOST_PHYS_BASE), size);
-	if (rc)
-		dev_err(hdev->dev, "dma_mmap_coherent error %d", rc);
-
-#else
-
-	rc = remap_pfn_range(vma, vma->vm_start,
-				virt_to_phys(cpu_addr) >> PAGE_SHIFT,
-				size, vma->vm_page_prot);
-	if (rc)
-		dev_err(hdev->dev, "remap_pfn_range error %d", rc);
-
-#endif
+	/* dma_mmap_coherent() hits "kernel BUG at mm/memory.c:2049" on this
+	 * hardware when the IOMMU translates DMA (reproduced twice on 6.8), and
+	 * the BUG wedges the whole host. With IOMMU translation the buffer is
+	 * vmap'd, so map it page by page: vmalloc_to_pfn() for vmap'd memory,
+	 * virt_to_phys() for linear memory. PAGE_ALIGN() keeps the size_t
+	 * countdown from underflowing on an unaligned size. */
+	{
+		unsigned long uaddr = vma->vm_start;
+		void *kaddr = cpu_addr;
+		size_t left = PAGE_ALIGN(size);
+		unsigned long pfn;
+		bool is_vmap = is_vmalloc_addr(cpu_addr);
+		(void)dma_addr;
+		rc = 0;
+		while (left) {
+			if (is_vmap)
+				pfn = vmalloc_to_pfn(kaddr);
+			else
+				pfn = virt_to_phys(kaddr) >> PAGE_SHIFT;
+			rc = remap_pfn_range(vma, uaddr, pfn, PAGE_SIZE,
+						vma->vm_page_prot);
+			if (rc) {
+				dev_err(hdev->dev, "remap_pfn_range error %d at off 0x%lx\n",
+					rc, (unsigned long)(size - left));
+				break;
+			}
+			uaddr += PAGE_SIZE;
+			kaddr += PAGE_SIZE;
+			left -= PAGE_SIZE;
+		}
+	}
 
 	return rc;
 }
