@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# HabanaLabs netwrok driver configuration
+#
+
+config HABANA_EN
+	tristate "Habanalabs network driver support"
+	depends on NETDEVICES && ETHERNET && INET && PCI && HABANA_AI
+	select AUXILIARY_BUS
+	help
+	  This driver enables Ethernet functionality on the network interfaces
+	  that are part of the GAUDI ASIC family of AI Accelerators.
+	  The network interfaces are mainly used for scaling-out the training of
+	  AI Neural Networks through ROCEv2 protocol.
+	  In addition, the interfaces can also provide a standard Ethernet
+	  interface, mainly used for low-bandwidth control path and to enable
+	  the use of standard Ethernet tools (e.g. ethtool) to change
+	  configuration and retrieve statistics of those interfaces.
+
+	  To compile this driver as a module, choose M here. The module
+	  will be called habanalabs_en.
