@@ -107,6 +107,18 @@ kernels in [`runtime/tpc-kernels/`](runtime/tpc-kernels). Those kernels are elem
 row reductions, RMSNorm pieces, RoPE, softmax pieces, SwiGLU and int8 requantise. Python can
 reach all of it through `ctypes`, which is how the Qwen3 example works.
 
+## Intel's TPC kernel library
+
+Intel's SDK ships 6,799 prebuilt TPC kernels: element-wise math, activations, reductions,
+softmax and more. This installs Intel's library from Intel's server, checksum-verified:
+
+```bash
+sudo scripts/install-vendor-kernels.sh     # -> /usr/local/lib/goya-stack/vendor/libtpc_kernels.so.1
+```
+
+libgoyamme fires vendor kernels that take one f32 input tensor and write one f32 output
+(`gmme_tpc_fire_vendor`). A tool to pull any kernel out of the library by name is being added.
+
 ## What is verified, and on what
 
 Measured on our HL-100 cards, firmware `28.2.2-sec-0`, Ubuntu 24.04, kernel `6.8.0-138`. Every
