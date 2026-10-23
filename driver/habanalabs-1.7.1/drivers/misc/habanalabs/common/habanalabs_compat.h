@@ -229,11 +229,11 @@ static inline int pci_irq_vector(struct pci_dev *dev, unsigned int nr)
 #ifndef _HAS_MMAP_READ_LOCK
 static inline void mmap_read_lock(struct mm_struct *mm)
 {
-	down_read(&mm->mmap_sem);
+	down_read(&mm->mmap_lock);
 }
 static inline void mmap_read_unlock(struct mm_struct *mm)
 {
-	up_read(&mm->mmap_sem);
+	up_read(&mm->mmap_lock);
 }
 #endif /* _HAS_MMAP_READ_LOCK */
 

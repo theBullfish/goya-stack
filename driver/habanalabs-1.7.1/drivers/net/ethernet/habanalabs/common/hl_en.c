@@ -266,7 +266,7 @@ static int hl_en_port_open_locked(struct hl_en_port *port)
 		return 0;
 
 	if (!hdev->poll_enable)
-		netif_napi_add(ndev, &port->napi, hl_en_napi_poll, NAPI_POLL_WEIGHT);
+		netif_napi_add(ndev, &port->napi, hl_en_napi_poll);
 
 	rc = aux_ops->port_hw_init(aux_dev, port_idx);
 	if (rc) {

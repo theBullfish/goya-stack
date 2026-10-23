@@ -1603,7 +1603,7 @@ static int hl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	 */
 	INIT_WORK(&hdev->work_pci, pci_remove_device);
 
-	pci_enable_pcie_error_reporting(pdev);
+	/* pci_enable_pcie_error_reporting auto-enabled in modern kernel */
 
 	rc = hl_device_init(hdev, hl_class);
 	if (rc) {
@@ -1616,7 +1616,7 @@ static int hl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	return 0;
 
 disable_device:
-	pci_disable_pcie_error_reporting(pdev);
+	/* pci_disable_pcie_error_reporting auto-handled */
 	pci_set_drvdata(pdev, NULL);
 	destroy_hdev(hdev);
 
@@ -1639,7 +1639,7 @@ static void hl_pci_remove(struct pci_dev *pdev)
 		return;
 
 	hl_device_fini(hdev);
-	pci_disable_pcie_error_reporting(pdev);
+	/* pci_disable_pcie_error_reporting auto-handled */
 	pci_set_drvdata(pdev, NULL);
 	destroy_hdev(hdev);
 }
@@ -1838,7 +1838,7 @@ static void hl_trace_print_sync_timestamp(void)
 {
 	u64 ts_nsec, ts_sec;
 
-	ts_nsec = sched_clock();
+	ts_nsec = ktime_get_ns();
 	ts_sec = ts_nsec / 1000000000;
 	ts_nsec %= 1000000000;
 
@@ -1906,7 +1906,7 @@ static int __init hl_init(void)
 
 	hl_major = MAJOR(dev);
 
-	hl_class = class_create(THIS_MODULE, HL_NAME);
+	hl_class = class_create(HL_NAME);
 	if (IS_ERR(hl_class)) {
 		pr_err("failed to allocate class\n");
 		rc = PTR_ERR(hl_class);

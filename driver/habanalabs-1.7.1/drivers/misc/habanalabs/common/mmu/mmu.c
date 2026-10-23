@@ -6,6 +6,7 @@
  */
 
 #include <linux/slab.h>
+#include <linux/genalloc.h>
 
 #include "../habanalabs.h"
 
