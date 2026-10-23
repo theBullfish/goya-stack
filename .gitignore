@@ -13,3 +13,5 @@ runtime/libgoyamme/libgoyamme.so
 runtime/libgoyamme/goya_gemm
 __pycache__/
 *.gguf
+driver/build.log
+runtime/build.log

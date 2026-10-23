@@ -25,7 +25,12 @@ fi
 
 apt-get install -y build-essential "linux-headers-$K" >/dev/null
 BUILD_USER=${SUDO_USER:-root}
-sudo -u "$BUILD_USER" make -C "$SRC" -j"$(nproc)" KVERSION="$K" GIT_SHA=68c1a21 M="$SRC"
+LOG=$PWD/driver/build.log; : > "$LOG"; chown "$BUILD_USER" "$LOG" 2>/dev/null || true
+echo "Building the driver for $K (about a minute; full log in driver/build.log) ..."
+# shellcheck disable=SC2024  # the log is opened by this root script on purpose
+if ! sudo -u "$BUILD_USER" make -C "$SRC" -j"$(nproc)" KVERSION="$K" GIT_SHA=68c1a21 M="$SRC" >"$LOG" 2>&1; then
+  grep -E "error|Error" "$LOG" | tail -20; echo "Driver build FAILED. Full log: $LOG"; exit 1
+fi
 
 install -d "/lib/modules/$K/updates"
 install -m 0644 "$SRC/drivers/net/ethernet/habanalabs/habanalabs_en.ko" \
