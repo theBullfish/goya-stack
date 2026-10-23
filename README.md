@@ -21,12 +21,15 @@ your own work on it. Everything here was built and measured on our own HL-100 ca
   Forced air across the passive heatsink. Read [docs/HARDWARE.md](docs/HARDWARE.md) and
   [docs/SAFETY.md](docs/SAFETY.md) before powering it.
 - **A PC with an x16 slot.** BIOS: **Above 4G Decoding on, Secure Boot off.**
-- **Ubuntu 24.04 LTS running its 6.8 kernel.** The Server installer uses 6.8 by default. Recent
-  Desktop installers default to a newer kernel; switch with:
+- **Ubuntu 24.04 LTS running its 6.8 kernel.** Easiest is a fresh install from the Ubuntu 24.04
+  *Server* image, which uses 6.8. Recent *Desktop* images default to a newer kernel. To move a
+  Desktop install to 6.8 for good:
   ```bash
-  sudo apt install linux-generic          # the 6.8 kernel series
-  sudo reboot                             # pick "Advanced options > ... 6.8.0-..." in GRUB if it is not the default
-  uname -r                                # must start with 6.8
+  sudo apt install linux-generic
+  sudo apt purge linux-generic-hwe-24.04 linux-image-generic-hwe-24.04 linux-headers-generic-hwe-24.04
+  sudo reboot          # once: GRUB > "Advanced options for Ubuntu" > the 6.8.0-... entry
+  sudo apt autoremove --purge     # run from 6.8; removes the newer kernels so 6.8 stays the default
+  uname -r             # must start with 6.8
   ```
 - For the language model: 32 GB of RAM and 35 GB of free disk.
 
