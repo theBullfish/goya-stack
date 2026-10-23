@@ -1536,7 +1536,7 @@ int gmme_gemm_resident(gmme *g, uint64_t a_off, uint64_t b_off, uint64_t c_off,
         Kp = ((K+31)/32)*32; if (Kp<32) Kp=32;
         Np = ((N+31)/32)*32; if (Np<32) Np=32;
     }
-    mt = g->rows_ovr ? g->rows_ovr : (e_spmode ? M : gmme_rows_per_fire(Kp));
+    mt = g->rows_ovr ? g->rows_ovr : (e_spmode ? (M > 256 ? 256 : M) : gmme_rows_per_fire(Kp));
     Mp = g->pad ? ((M + mt - 1)/mt)*mt : M;
     if ((size_t)a_off + (size_t)Mp*Kp > CAP_A ||
         (size_t)c_off + (size_t)Mp*Np*4 > CAP_C ||

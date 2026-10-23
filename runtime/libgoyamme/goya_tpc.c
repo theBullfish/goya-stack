@@ -1249,22 +1249,18 @@ int gmme_tpc_fire_vendor_resident(gmme *g, const char *kpath,
     return 0;
 }
 
+#ifndef GOYA_TPC_DIR_DEFAULT
+#define GOYA_TPC_DIR_DEFAULT "/usr/local/share/goya-stack/tpc-kernels"
+#endif
+
+/* A per-kernel env var wins, then $GOYA_TPC_DIR, then the install directory.
+   No $HOME-relative default: under sudo HOME is /root, and a missing kernel
+   only shows up later as "cannot load .text". */
 static const char *kern_path(const char *env, const char *dflt) {
     static char buf[512];
-    const char *p = getenv(env), *sudo_user;
+    const char *p = getenv(env), *dir = getenv("GOYA_TPC_DIR");
     if (p) return p;
-    /* Under sudo HOME is /root, so a $HOME-relative default silently points at
-       a directory that does not exist and every fire fails with "cannot load
-       .text". Fall back to the invoking user's home. This has cost real
-       debugging time twice; it is not a hypothetical. */
-    snprintf(buf,sizeof buf,"%s/gmme/%s", getenv("HOME") ? getenv("HOME") : "/root", dflt);
-    if (access(buf, R_OK) == 0) return buf;
-    sudo_user = getenv("SUDO_USER");
-    if (sudo_user) {
-        snprintf(buf,sizeof buf,"/home/%s/gmme/%s", sudo_user, dflt);
-        if (access(buf, R_OK) == 0) return buf;
-    }
-    snprintf(buf,sizeof buf,"%s/gmme/%s", getenv("HOME") ? getenv("HOME") : "/root", dflt);
+    snprintf(buf, sizeof buf, "%s/%s", dir ? dir : GOYA_TPC_DIR_DEFAULT, dflt);
     return buf;   /* let the caller report the real path it could not open */
 }
 

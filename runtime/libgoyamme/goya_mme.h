@@ -89,12 +89,12 @@ int gmme_fires(const gmme *g);
  *
  * gmme_tpc_reduce_i32 runs k_reduce_i32_1d: out[j] = sum(in[j..j+K-1]).
  * The kernel binary comes from $GOYA_TPC_KERNEL, defaulting to
- * $HOME/gmme/k_reduce_i32_1d.o.
+ * $GOYA_TPC_DIR/k_reduce_i32_1d.o.
  * -------------------------------------------------------------------------*/
 int gmme_tpc_reduce_i32(gmme *g, const int32_t *in, int n_in, int K,
                         int32_t *out, int n_out, int tpc_idx);
 /* EW: out[n] = a[n] + b[n]. Kernel from $GOYA_TPC_EW_KERNEL, default
-   $HOME/gmme/k_ew_add_i32.o */
+   $GOYA_TPC_DIR/k_ew_add_i32.o */
 int gmme_tpc_ew_add_i32(gmme *g, const int32_t *a, const int32_t *b, int n,
                         int32_t *out, int tpc_idx);
 /* Upload a kernel into SRAM once; any core can then fire it with no DMA.
@@ -176,7 +176,7 @@ int gmme_tpc_op_resident(gmme *g, const char *kpath, uint64_t a_off,
    are DRAM offsets into the C region; nothing passes through the host. n must
    be a multiple of 256 -- one int8 vector -- and the index space is n/256, not
    the n/64 the all-int32 ops use. Kernel from $GOYA_TPC_REQUANT_KERNEL,
-   default $HOME/gmme/k_requant_i32_i8.o */
+   default $GOYA_TPC_DIR/k_requant_i32_i8.o */
 /* Elementwise op with tensor 1 BROADCAST: every lane reads b_off, because that
    tensor's DIM_0_STRIDE is 0. Turns a per-row scalar (a reduction result) into a
    full-width operand with no host round-trip. */
@@ -218,7 +218,7 @@ int gmme_tpc_reduce_f32_pass1(gmme *g, uint64_t a_off, uint64_t out_off,
    Writes 64 f32 (the sliding window); element 0 is the answer. The sum is
    sequential in k, so a host reference must add in the SAME order to match --
    float addition is not associative. Kernel from $GOYA_TPC_REDUCE_F32_KERNEL,
-   default $HOME/gmme/k_reduce_f32_1d.o */
+   default $GOYA_TPC_DIR/k_reduce_f32_1d.o */
 int gmme_tpc_reduce_f32_resident(gmme *g, uint64_t a_off, uint64_t out_off,
                                  int K, int tpc_idx);
 /* The fixed within-256 output permutation of the requantise ABI:
