@@ -116,8 +116,20 @@ softmax and more. This installs Intel's library from Intel's server, checksum-ve
 sudo scripts/install-vendor-kernels.sh     # -> /usr/local/lib/goya-stack/vendor/libtpc_kernels.so.1
 ```
 
-libgoyamme fires vendor kernels that take one f32 input tensor and write one f32 output
-(`gmme_tpc_fire_vendor`). A tool to pull any kernel out of the library by name is being added.
+Every kernel is a standalone TPC program inside that library. `goya-kernels` lists them and pulls
+any of them out as the `.o` file libgoyamme loads. 5,284 of the 6,799 are built for this chip; the
+`_goya2` ones are for its successor.
+
+```bash
+goya-kernels list | grep softmax
+goya-kernels extract softmax_dim0_f32 relu_fwd_f32 -o ~/kernels
+goya-kernels extract --all-gen1 -o ~/kernels          # all 5,284, about 207 MB
+```
+
+`gmme_tpc_fire_vendor(g, path, in, n, out, core)` loads one onto a TPC core and runs it. That
+call takes one f32 input tensor and writes one f32 output tensor, up to 262,144 floats, with no
+scalar parameters. Loading vendor kernels onto the card is verified; a checked result from firing
+one is not on record yet.
 
 ## What is verified, and on what
 
