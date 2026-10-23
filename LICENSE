@@ -1,0 +1,13 @@
+Copyright (c) 2026 Codex Labs LLC. All rights reserved.
+
+This license covers everything in this repository except:
+  driver/            Intel's habanalabs driver with our changes, GPL-2.0 (SPDX headers in each file)
+  runtime/hl-thunk/  Habana's hl-thunk library, MIT (runtime/hl-thunk/COPYING.MIT)
+
+Owners of Habana Goya cards bought from Codex Labs LLC may use, copy and modify this software to
+run those cards. Redistributing it to anyone else needs written permission from Codex Labs LLC.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL CODEX LABS LLC BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR ITS USE.

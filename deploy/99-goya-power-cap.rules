@@ -1,0 +1,3 @@
+# Re-apply the Goya power cap whenever a card appears -- covers driver reload,
+# which the systemd unit alone does not. See goya-power-cap.sh for why 100 W.
+ACTION=="add", SUBSYSTEM=="habanalabs", RUN+="/usr/local/sbin/goya-power-cap.sh"

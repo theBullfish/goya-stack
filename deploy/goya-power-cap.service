@@ -1,0 +1,13 @@
+[Unit]
+Description=Cap Goya HL-1000 power at its real ~100W rating
+Documentation=https://github.com/theBullfish/goya-stack/blob/main/docs/HARDWARE.md
+After=multi-user.target
+ConditionPathExistsGlob=/sys/class/habanalabs/hl*
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/goya-power-cap.sh
+
+[Install]
+WantedBy=multi-user.target
